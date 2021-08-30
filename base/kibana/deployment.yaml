@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kibana-deployment
+  labels:
+    k8s-app: kibana
+spec:
+  selector:
+    matchLabels:
+      k8s-app: kibana
+  serviceName: kibana
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: kibana
+    spec:
+      containers:
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana:7.14.0
+        envFrom:
+        - configMapRef:
+            name: kibana-config
+        resources:
+          limits:
+            cpu: 512m
+        ports:
+        - containerPort: 5601
+          name: httpport

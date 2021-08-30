@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch-deployment
+  labels:
+    k8s-app: elasticsearch
+spec:
+  selector:
+    matchLabels:
+      k8s-app: elasticsearch
+  serviceName: elasticsearch
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: elasticsearch
+    spec:
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+        envFrom:
+        - configMapRef:
+            name: elasticsearch-config
+        resources:
+          limits:
+            cpu: 512m
+        ports:
+        - containerPort: 9200
+          name: httpport
+        volumeMounts:
+        - name: storage
+          mountPath: /data
+      volumes:
+          - emptyDir:
+              medium: ""
+            name: "storage"
